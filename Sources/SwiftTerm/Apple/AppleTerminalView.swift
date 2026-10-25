@@ -565,7 +565,13 @@ struct FrameViewState: Sendable {
         fontSmoothing = view.fontSmoothing
         cursorHasFocus = !view.caretViewTracksFocus || view.hasFocus
 #else
+        #if canImport(MetalKit)
+        // MTKView draws at the native pixel scale, which can differ from
+        // UIKit's scale. Glyph coordinates must use the drawable's scale.
+        renderingScale = view.metalView?.renderGeometry.renderingScale ?? view.backingScaleFactor()
+        #else
         renderingScale = view.backingScaleFactor()
+        #endif
         fontSmoothing = true
         cursorHasFocus = !view.caretViewTracksFocus || view.isFirstResponder
 #endif

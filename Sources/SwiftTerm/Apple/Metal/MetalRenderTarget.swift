@@ -29,6 +29,14 @@ struct MetalSurfaceGeometry: Sendable, Equatable {
     let bounds: CGRect
     let drawableSize: CGSize
     let contentsScale: CGFloat
+
+    /// Points-to-pixels scale of the render target. On iOS this can differ
+    /// from UIScreen.scale, for example when a display downsamples UIKit.
+    var renderingScale: CGFloat? {
+        guard bounds.width > 0, drawableSize.width > 0 else { return nil }
+        let scale = drawableSize.width / bounds.width
+        return scale.isFinite && scale > 0 ? scale : nil
+    }
 }
 
 /// A drawable and its immutable render state.
